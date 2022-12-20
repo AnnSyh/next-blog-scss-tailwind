@@ -5,7 +5,7 @@ import Layout, { siteTitle } from "../companents/layout";
 import utilStyles from "../styles/utils.module.scss";
 import { getSortedPostsData } from "../lib/posts";
 
-export default function Home({ allPostsData }) {
+export default function Home({ allPostsData, dataPostsFromJsonplaceholder }) {
   return (
     <Layout home>
       <Head>
@@ -25,6 +25,18 @@ export default function Home({ allPostsData }) {
             </li>
           ))}
         </ul>
+        <h2 className={utilStyles.headingLg}>
+          Blog from jsonplaceholder.typicode.com/posts
+        </h2>
+        <ul className={utilStyles.list}>
+          {dataPostsFromJsonplaceholder.map(({ id, title, body }) => (
+            <li className={utilStyles.listItem} key={id}>
+              <Link href={`/postsfromresurse/${id}`}>{title}</Link>
+              <br />
+              <strong>{body}</strong>
+            </li>
+          ))}
+        </ul>
       </section>
     </Layout>
   );
@@ -33,9 +45,20 @@ export default function Home({ allPostsData }) {
 export async function getStaticProps() {
   const allPostsData = getSortedPostsData();
 
+  const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+  const dataPostsFromJsonplaceholder = await res.json();
+  // const dataPostsFromJsonplaceholder = null; //выдает 404 стр
+
+  if (!dataPostsFromJsonplaceholder) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: {
       allPostsData,
+      dataPostsFromJsonplaceholder,
     },
   };
 }

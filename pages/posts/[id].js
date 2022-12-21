@@ -1,40 +1,41 @@
-import Layout from "../../companents/layout";
-import { getAllPostIds, getPostData } from "../../lib/posts";
-import Head from "next/head";
-import Date from "../../companents/date";
-import utilStyles from "../../styles/utils.module.scss";
+import Layout from "../../companents/Layout";
+import PostInfo from "../../companents/PostInfo";
 
-export async function getStaticProps({ params }) {
-  // Add the "await" keyword like this:
-  const postData = await getPostData(params.id);
-  return {
-    props: {
-      postData,
-    },
-  };
-}
+export const getStaticPaths = async () => {
+  const res = await fetch(`https://jsonplaceholder.typicode.com/posts`);
+  const data = await res.json();
 
-export async function getStaticPaths() {
-  const paths = getAllPostIds();
+  const paths = data.map(({ id }) => ({
+    params: { id: id.toString() },
+  }));
+
   return {
     paths,
     fallback: false,
   };
-}
+};
 
-export default function Post({ postData }) {
+export const getStaticProps = async (context) => {
+  const { id } = context.params;
+  const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+  const data = await res.json();
+
+  if (!data) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: { posts: data },
+  };
+};
+
+export default function Post({ posts }) {
   return (
     <Layout>
-      <Head>
-        <title>{postData.title}</title>
-      </Head>
-      <article>
-        <h1 className={utilStyles.headingXl}>{postData.title}</h1>
-        <div className={utilStyles.lightText}>
-          <Date dateString={postData.date} />
-        </div>
-        <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
-      </article>
+      111
+      <PostInfo post={posts} />
     </Layout>
   );
 }

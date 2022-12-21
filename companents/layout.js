@@ -4,13 +4,19 @@ import styles from "./layout.module.scss";
 import utilStyles from "../styles/utils.module.scss";
 import Link from "next/link";
 
+import Header from "./Header";
+import Footer from "./Footer";
+
 const name = "Ann Sykharevskaya";
 export const siteTitle = "Next.js Sample Website";
 
-export default function Layout({ children, home }) {
+export default function Layout({ children, home, title = "Ann's blog" }) {
   return (
     <div className={styles.container}>
+      <Header />
+
       <Head>
+        <title>{title} | Next Course</title>
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="description"
@@ -25,6 +31,7 @@ export default function Layout({ children, home }) {
         <meta name="og:title" content={siteTitle} />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
+
       <header className={styles.header}>
         {home ? (
           <>
@@ -58,12 +65,16 @@ export default function Layout({ children, home }) {
           </>
         )}
       </header>
+
       <main>{children}</main>
+
       {!home && (
         <div className={styles.backToHome}>
           <Link href="/">← Back to home</Link>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 }
